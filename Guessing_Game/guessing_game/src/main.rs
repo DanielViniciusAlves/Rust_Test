@@ -1,22 +1,35 @@
-use std::io;
 use rand::Rng;
+use std::cmp::Ordering;
+use std::io;
 
 fn main() {
-    println!("Guess the number program!");
+    println!("Guess the number!");
 
     let secret_number = rand::thread_rng().gen_range(1..=100);
-    println!("The secret number is: {secret_number}");
-    
-    println!("Input the number you want to guess:");
 
-    // Let is used to declare a variable, and the mut indicates that this variable is mutable.
-    // The String::new() means that the new function will be creating a new empty String
-    // The :: means that the String is associated with new
-    let mut input = String::new();
+    loop {
+        println!("Please input your guess.");
 
-    io::stdin()
-        .read_line(&mut input) // Work similar to the Clang, but in this case we use the &mut to specify that is a mutable variable we are referencing 
-        .expect("There was a failure!"); // The read_line function returns ok or error, if there was an error this function will indicate with the message defined
+        let mut guess = String::new();
 
-    println!("You guessed: {input}");
+        io::stdin()
+            .read_line(&mut guess)
+            .expect("Failed to read line");
+
+        let guess: u32 = match guess.trim().parse() {
+            Ok(num) => num,
+            Err(_) => continue,
+        };
+
+        println!("You guessed: {guess}");
+
+        match guess.cmp(&secret_number) {
+            Ordering::Less => println!("Too small!"),
+            Ordering::Greater => println!("Too big!"),
+            Ordering::Equal => {
+                println!("You win!");
+                break;
+            }
+        }
+    }
 }
